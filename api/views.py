@@ -7,8 +7,6 @@ from datetime import datetime
 import base64
 import json
 PRIVATE_KEY = "mysecretkey123"
-
-
 def database():
 
     mydb = sql.connect(
@@ -75,7 +73,6 @@ def create_product(request):
     if request.method == 'POST':
         try:
             body = json.loads(request.body.decode('utf-8'))
-
             sku = body.get('sku')
             pname = body.get('pname')
             category = body.get('category')
@@ -121,9 +118,9 @@ def create_product(request):
 
 @csrf_exempt
 def get_products(request):
+    cursor, mydb = database()
     if request.method == 'GET':
         try:
-            cursor, mydb = database()
             cursor.execute('SELECT * FROM product')
             rows = cursor.fetchall()
             columns = [col[0] for col in cursor.description]
@@ -144,5 +141,32 @@ def get_products(request):
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'Only GET method allowed'}, status=405)
+        
+    elif request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+            image_data = base64.b64decode(body.get("images").split(",")[-1]) if body.get("images") else None
+            cursor.execute("""
+                UPDATE product SET
+                    Pname=%s, Category=%s, SubCategory=%s, Unit=%s, Qty=%s,
+                    Price=%s, DiscountType=%s, DiscountValue=%s, QtyAlert=%s,
+                    Image=%s, Description=%s
+                WHERE SKU=%s
+            """, [
+                body["pname"], body["category"], body["subcategory"], body["unit"],
+                body["qty"], body["price"], body["discountType"], body["discountValue"],
+                body["qtyAlert"], image_data, body["description"], body['sku']
+            ])
+            mydb.commit()
+            return JsonResponse({"status": "success", "message": "Product updated."})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        
+    elif request.method == "DELETE":
+        body = json.loads(request.body)
+        try:    
+            cursor.execute("DELETE FROM product WHERE SKU = %s", (body['sku'],))
+            mydb.commit()
+            return JsonResponse({"status": "success", "message": "Product deleted."})
+        except:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)    
