@@ -20,32 +20,53 @@ def database():
     return cursor,mydb
 
 @csrf_exempt
-@require_http_methods(["GET", "OPTIONS"])
+@require_http_methods(["GET","PUT", "OPTIONS"])
 def get_category(request):
     if request.method == "OPTIONS":
         return JsonResponse({}, status=200)
 
     client_key = request.headers.get('X-API-KEY')
-    if client_key != PRIVATE_KEY:
-        return JsonResponse({"error": "Unauthorized"}, status=401)
-    
-    cursor, mydb = database()
-    c = "select * from product_category"
-    cursor.execute(c)
-    result = cursor.fetchall()
-
-    dataList = []
-    for x in result:
-        category = {
-            'id': x[0],
-            'name': x[1],
-            'createdOn': x[2],
-            'createdBy': x[3],
-            'status': x[4]
-        }
-        dataList.append(category)
+    if request.method == 'GET':
+        if client_key != PRIVATE_KEY:
+            return JsonResponse({"error": "Unauthorized"}, status=401)
         
-    return JsonResponse(dataList, safe=False)
+        cursor, mydb = database()
+        c = "select * from product_category"
+        cursor.execute(c)
+        result = cursor.fetchall()
+
+        dataList = []
+        for x in result:
+            c="select count(SKU) from product where Category='{}'".format(x[1])
+            cursor.execute(c)
+            categoryCount = cursor.fetchone()
+            category = {
+                'id': x[0],
+                'name': x[1],
+                'createdOn': x[2],
+                'createdBy': x[3],
+                'status': x[4],
+                'count': categoryCount
+            }
+            dataList.append(category)
+            
+        return JsonResponse(dataList, safe=False)
+    elif request.method == "PUT":
+        try:
+            body = json.loads(request.body)
+            cursor, mydb = database()
+            image_data = base64.b64decode(body.get("images").split(",")[-1]) if body.get("images") else None
+            cursor.execute("""
+                UPDATE product_category SET
+                    categoryName=%s, currentStatus=%s, Image=%s
+                    WHERE categoryName=%s
+            """, [
+                body["title"], body["status"], image_data,  body['title']
+            ])
+            mydb.commit()
+            return JsonResponse({"status": "success", "message": "Category updated"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
 
