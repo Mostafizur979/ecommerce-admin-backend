@@ -11,7 +11,11 @@ from .products.updateProduct import updateProduct
 from .products.createProduct import createProduct   
 from .products.getCategory import getCategory
 from .products.updateCategory import updateCategory 
-from .products.createCategory import createCategory    
+from .products.createCategory import createCategory   
+from .products.createSubCategory import createSubCategory 
+from .products.getSubCategory import getSubCategory
+from .products.updateSubCategory import updateSubCategory
+
 PRIVATE_KEY = "mysecretkey123"
 def database():
     mydb = sql.connect(
@@ -52,7 +56,32 @@ def category(request):
             return JsonResponse({"status": "success", "message": "Category updated"})
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST","GET","PUT", "OPTIONS"])
+def subCategory(request):
+    cursor, mydb = database()
+    client_key = request.headers.get('X-API-KEY')
+    if request.method == 'POST':
+        if client_key != PRIVATE_KEY:
+            return JsonResponse({"error": "Unauthorized"}, status=401)
+        try:
+            createSubCategory(request, cursor, mydb)
+            return JsonResponse({'status': 'success', 'message': 'Category created successfully'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
         
+    elif request.method == 'GET':
+        if client_key != PRIVATE_KEY:
+            return JsonResponse({"error": "Unauthorized"}, status=401)
+        dataList = getSubCategory(cursor)
+        return JsonResponse(dataList, safe=False)  
+    elif request.method == "PUT":
+        try:
+            updateSubCategory(request, cursor, mydb)
+            return JsonResponse({"status": "success", "message": "Category updated"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
  
 @csrf_exempt
 def products(request):
@@ -64,6 +93,7 @@ def products(request):
 
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
+        
     elif request.method == 'GET':
         try:
             data = getProducts(cursor)
