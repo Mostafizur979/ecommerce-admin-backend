@@ -15,7 +15,7 @@ from .products.createCategory import createCategory
 from .products.createSubCategory import createSubCategory 
 from .products.getSubCategory import getSubCategory
 from .products.updateSubCategory import updateSubCategory
-
+from .sales.createSales import createSales
 PRIVATE_KEY = "mysecretkey123"
 def database():
     mydb = sql.connect(
@@ -117,3 +117,21 @@ def products(request):
             return JsonResponse({"status": "success", "message": "Product deleted."})
         except:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)    
+        
+
+@csrf_exempt
+def sales(request):
+    cursor, mydb = database()
+    if request.method == 'POST':
+        try:
+            createSales(request, cursor, mydb)
+            return JsonResponse({'status': 'success', 'message': 'successfully added sales'})
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    elif request.method == 'GET':
+        try:
+            return JsonResponse({'status': 'success', 'message': 'successfully added sales'})
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})    
