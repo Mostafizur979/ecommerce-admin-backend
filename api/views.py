@@ -16,6 +16,9 @@ from .products.createSubCategory import createSubCategory
 from .products.getSubCategory import getSubCategory
 from .products.updateSubCategory import updateSubCategory
 from .sales.createSales import createSales
+from .sales.getSales import getSales
+from .crm.customer.getCustomer import getCustomerInfo
+
 PRIVATE_KEY = "mysecretkey123"
 def database():
     mydb = sql.connect(
@@ -126,12 +129,23 @@ def sales(request):
         try:
             createSales(request, cursor, mydb)
             return JsonResponse({'status': 'success', 'message': 'successfully added sales'})
-
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
     elif request.method == 'GET':
-        try:
-            return JsonResponse({'status': 'success', 'message': 'successfully added sales'})
+        try: 
+            data = getSales(cursor)
+            return JsonResponse(data, safe=False)
 
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})    
+
+@csrf_exempt        
+def customer(request):
+    cursor,mydb = database()
+    if(request.method == 'GET'):
+        try:
+            data = getCustomerInfo(cursor)
+            return JsonResponse( data, safe=False)
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})        

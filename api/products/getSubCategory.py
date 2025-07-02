@@ -3,7 +3,6 @@ def getSubCategory(cursor):
     c = "select * from product_sub_category"
     cursor.execute(c)
     result = cursor.fetchall()
-
     dataList = []
     for x in result:
         category = {
