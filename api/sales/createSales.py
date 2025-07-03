@@ -28,14 +28,14 @@ def createSales(request, cursor, mydb):
         INSERT INTO sales (
             Sid, Cid, Pid, Qty, Size, Price,
             Tax, Shipping, Discount, Address,
-            InvoiceDate
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            InvoiceDate,Status,PaidAmount
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'Pending',%s)
     """
 
     cursor.execute(query, [
         sid, cMobile[7:], sku, qty, size, price,
         tax, shipping, discount, address,
-        created_on
+        created_on,0
     ])
     mydb.commit()
 
