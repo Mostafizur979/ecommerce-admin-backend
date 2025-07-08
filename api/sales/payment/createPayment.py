@@ -14,6 +14,7 @@ def createSalesPayment(request,cursor,mydb):
        insert into payment (Id,Sid,PaymentMethod,Amount,AddedBy,PaymentDate) 
          values (%s,%s,%s,%s,%s,%s)
     """
+    print(method)
     cursor.execute(c,[pid,sid,method,amount,addedBy,paymentDate])
     mydb.commit()
 

@@ -1,5 +1,5 @@
 def getSales(cursor):
-    c="select * from sales"
+    c="select * from sales order by InvoiceDate desc"
     cursor.execute(c)
     result = cursor.fetchall()
 

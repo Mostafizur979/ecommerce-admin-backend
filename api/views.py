@@ -19,6 +19,8 @@ from .sales.createSales import createSales
 from .sales.getSales import getSales
 from .crm.customer.getCustomer import getCustomerInfo
 from .sales.payment.createPayment import createSalesPayment
+from .sales.payment.getPaymentList import getSalePayment
+
 PRIVATE_KEY = "mysecretkey123"
 def database():
     mydb = sql.connect(
@@ -161,7 +163,7 @@ def salesPayment(request):
             return JsonResponse({'status': 'error', 'message': str(e)})
     elif request.method == 'GET':
         try: 
-            data = getSales(cursor)
+            data = getSalePayment(cursor)
             return JsonResponse(data, safe=False)
 
         except Exception as e:
