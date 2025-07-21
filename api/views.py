@@ -21,6 +21,8 @@ from .crm.customer.getCustomer import getCustomerInfo
 from .sales.payment.createPayment import createSalesPayment
 from .sales.payment.getPaymentList import getSalePayment
 from .sales.createSales import createCustomer
+from .shipping.createShipping import createShippingAddress
+from .shipping.getShippingAddress import getShippingAddress
 PRIVATE_KEY = "mysecretkey123"
 def database():
     mydb = sql.connect(
@@ -181,4 +183,24 @@ def salesPayment(request):
             return JsonResponse(data, safe=False)
 
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})    
+            return JsonResponse({'status': 'error', 'message': str(e)})  
+
+@csrf_exempt
+def shipping(request): 
+    cursor, mydb = database()
+    if request.method == 'POST':
+        try:
+            createShippingAddress(request, cursor, mydb)
+            return JsonResponse({'status': 'success', 'message': 'successfully added shipping address'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}) 
+        
+    elif request.method == 'GET':
+        try:
+            phone = request.GET.get('phone')  # ✅ Get query param
+            data = getShippingAddress(cursor, phone)
+            return JsonResponse(data, safe=False)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+
