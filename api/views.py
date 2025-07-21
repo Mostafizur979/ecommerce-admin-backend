@@ -20,7 +20,7 @@ from .sales.getSales import getSales
 from .crm.customer.getCustomer import getCustomerInfo
 from .sales.payment.createPayment import createSalesPayment
 from .sales.payment.getPaymentList import getSalePayment
-
+from .sales.createSales import createCustomer
 PRIVATE_KEY = "mysecretkey123"
 def database():
     mydb = sql.connect(
@@ -151,6 +151,20 @@ def customer(request):
 
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})    
+    elif request.method == 'POST':
+        try:
+            body = json.loads(request.body.decode('utf-8'))
+            cName = body.get('name')   
+            mobile = body.get('mobile') 
+            upazila = body.get('upazila')
+            district = body.get('district')
+            created_on = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            status = createCustomer(cursor,mydb,cName,mobile,upazila,district,created_on)
+            return JsonResponse({'status': 'success', 'message': status})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+                
 
 @csrf_exempt
 def salesPayment(request):

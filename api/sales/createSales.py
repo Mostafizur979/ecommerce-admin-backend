@@ -52,6 +52,9 @@ def createCustomer(cursor,mydb,cName,cMobile,cUpazila,cDistrict,created_on):
         """
         cursor.execute(query, (cMobile[7:], cName, cMobile, cUpazila, cDistrict, created_on))
         mydb.commit()
+        return 1
+    else:
+        return 0
 
 def findSalesId(cursor):
     cursor.execute("SELECT COUNT(Sid) FROM sales")
