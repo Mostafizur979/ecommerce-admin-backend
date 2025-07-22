@@ -197,8 +197,9 @@ def shipping(request):
         
     elif request.method == 'GET':
         try:
-            phone = request.GET.get('phone')  # ✅ Get query param
-            data = getShippingAddress(cursor, phone)
+            phone = request.GET.get('phone')  
+            provider = request.GET.get('provider')
+            data = getShippingAddress(cursor, phone, provider)
             return JsonResponse(data, safe=False)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})

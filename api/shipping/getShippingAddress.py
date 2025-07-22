@@ -1,5 +1,5 @@
-def getShippingAddress(cursor,phone):
-    c = "select * from shipping_address where customerPhone='{}'".format(phone)
+def getShippingAddress(cursor,phone,provider):
+    c = "select * from shipping_address where customerPhone='{}' and shipmentprovider='{}'".format(phone,provider)
     cursor.execute(c)
     result = cursor.fetchall()
     data = []
