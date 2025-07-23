@@ -5,6 +5,7 @@ def getShippingAddress(cursor,phone,provider):
     data = []
     for x in result:
         address = {
+            'cPhone': x[0],
             'cName': x[1],
             'address': x[2],
             'division': x[3],

@@ -15,27 +15,34 @@ def createSales(request, cursor, mydb):
     cMobile = body.get('cMobile')
     cUpazila = body.get('cUpazila')
     cDistrict = body.get('cDistrict')
+    individualPrice_list = body.get('individualPrice')
+    individualTax_list = body.get('individualTax') 
+    indivualDiscount_list = body.get('indivualDiscount')
     created_on = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
     createCustomer(cursor,mydb,cName,cMobile,cUpazila,cDistrict,created_on)
-    sid = findSalesId(cursor)
 
+    sid = findSalesId(cursor)
+    print(body)
     qty_list = [str(qty_dict[sku]) for sku in sku_list]
     sku = ','.join(sku_list)
     qty = ','.join(qty_list)
+    individualPrice = ','.join([str(i) for i in individualPrice_list])
+    individualTax =  ','.join([str(i) for i in individualTax_list])
+    indivualDiscount = ','.join([str(i) for i in indivualDiscount_list])
 
     query = """
         INSERT INTO sales (
             Sid, Cid, Pid, Qty, Size, Price,
             Tax, Shipping, Discount, Address,
-            InvoiceDate,Status,PaidAmount
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'Pending',%s)
+            InvoiceDate,Status,PaidAmount,individualPrice,individualTax,individualDiscount
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'Pending',%s, %s, %s, %s)
     """
 
     cursor.execute(query, [
         sid, cMobile[7:], sku, qty, size, price,
         tax, shipping, discount, address,
-        created_on,0
+        created_on,0,individualPrice,individualTax,indivualDiscount
     ])
     mydb.commit()
 
@@ -57,9 +64,9 @@ def createCustomer(cursor,mydb,cName,cMobile,cUpazila,cDistrict,created_on):
         return 0
 
 def findSalesId(cursor):
-    cursor.execute("SELECT COUNT(Sid) FROM sales")
+    cursor.execute("SELECT max(serial) FROM sales")
     result = cursor.fetchone()
-    count = result[0] if result else 0  
+    serial = result[0] if result else 0  
     current_year = datetime.now().year
-    sid = "INV" + str(current_year) + str(count + 1)
+    sid = "INV" + str(current_year) + str(serial + 1)
     return sid
