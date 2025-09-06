@@ -29,7 +29,7 @@ def database():
       host="localhost",
       user="root",
       password="",
-      database="nextadmin"
+      database="ecommerce_v2"
       )
 
     cursor=mydb.cursor()
