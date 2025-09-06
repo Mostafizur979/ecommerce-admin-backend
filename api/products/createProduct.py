@@ -16,10 +16,11 @@ def createProduct(request, cursor, mydb):
     qtyAlert = body.get('qtyAlert')
     image_data = body.get('images')
     description = body.get('description')
+    title = body.get('descTitle')
     created_on = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    if image_data:
-        image_binary = base64.b64decode(image_data.split(',')[-1])
+    if len(image_data) > 0:
+        image_binary = base64.b64decode(image_data[0].split(',')[-1])
     else:
         image_binary = None
 
@@ -33,6 +34,30 @@ def createProduct(request, cursor, mydb):
     cursor.execute(query, [
         sku, pname, category, subcategory, unit, qty,
         price, discountType, discountValue, qtyAlert,
-        image_binary, description, created_on
+        image_binary, "none", created_on
     ])
     mydb.commit()
+
+    id = 0
+    for data in description:
+        id = id + 1
+        query = """INSERT INTO product_description ( 
+           productId, descriptionId, title, description 
+        ) VALUES (%s,%s,%s,%s)
+        """
+        cursor.execute(query, [sku,id,data['title'], data['description']])
+        mydb.commit()
+    
+    id = 0
+    for data in image_data:
+        id = id + 1
+        image_binary = base64.b64decode(data.split(',')[-1])
+        query = """ INSERT INTO product_asset (
+          productId, assetId, assetUrl
+        ) VALUES(%s,%s,%s)
+        """
+        cursor.execute(query, [sku,id,image_binary])
+        mydb.commit()
+
+
+    
