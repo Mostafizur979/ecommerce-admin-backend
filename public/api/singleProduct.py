@@ -4,7 +4,15 @@ def getProduct(cursor,id):
         q="SELECT * FROM product where SKU = '{}'".format(id)
         cursor.execute(q)
         x = cursor.fetchone()
-       
+        
+        c="select categoryName from product_category where categoryId='{}'".format(x[2])
+        cursor.execute(c)
+        categoryName = cursor.fetchone()
+
+        c="select categoryName from product_sub_category where categoryId='{}'".format(x[2])
+        cursor.execute(c)
+        subCategoryName = cursor.fetchone()
+
         product = {
             'id': x[0],
             'name': x[1],
@@ -13,7 +21,9 @@ def getProduct(cursor,id):
             'unit': x[4],
             'qty': x[5],
             'price': x[6],
-            'discount': x[8]
+            'discount': x[8],
+            'categoryName': categoryName[0],
+            'subCategoryName': subCategoryName[0]
         }
 
         try:
