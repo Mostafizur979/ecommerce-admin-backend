@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 import mysql.connector as sql
 from .api.products import getProducts
 from .api.categories import getCategory
+from .api.singleProduct import getProduct
 def database():
     mydb = sql.connect(
       host="localhost",
@@ -37,3 +38,13 @@ def categories(request):
         except Exception as e:
             return JsonResponse({'error': str(data)}, status=500)
         
+@csrf_exempt
+def singleProduct(request, id):
+    cursor, mydb = database()    
+    if request.method == 'GET':
+        try:
+            data = getProduct(cursor,id)
+            return JsonResponse( data, safe=False)
+        
+        except Exception as e:
+            return JsonResponse({'error': str(data)}, status=500)
