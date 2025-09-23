@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import mysql.connector as sql
+
+from .api.filteredProducts import getFilteredProducts
 from .api.products import getProducts
 from .api.categories import getCategory
 from .api.singleProduct import getProduct
@@ -48,3 +50,14 @@ def singleProduct(request, id):
         
         except Exception as e:
             return JsonResponse({'error': str(data)}, status=500)
+        
+def filteredProducts(request):
+    cursor, mydb = database() 
+    if request.method == 'GET':
+        try:
+            data = getFilteredProducts(cursor,request)
+            return JsonResponse( data, safe=False)
+        
+        except Exception as e:
+            return JsonResponse({'error': str(data)}, status=500)
+    

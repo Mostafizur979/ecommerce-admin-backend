@@ -22,8 +22,8 @@ def getProducts(cursor):
             except:
                 product['image'] = "no-image"  
                 
-            product['descriptions'] = getProductDescription(product['id'],cursor)
-            product['assets'] = getProductAssets(product['id'],cursor)
+            # product['descriptions'] = getProductDescription(product['id'],cursor)
+            # product['assets'] = getProductAssets(product['id'],cursor)
             product_list.append(product)
         return  product_list
 
