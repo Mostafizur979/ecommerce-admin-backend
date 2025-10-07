@@ -17,8 +17,9 @@ def getSales(cursor):
             'discount': x[8],
             'deliveryAddress': x[9],
             'invoicedate' : x[10],
-            'status' : x[11],
-            'paid' : x[12]
+            'status' : x[15],
+            'paid' : x[16]
         }
         dataList.append(data)
+    print("data: ", dataList)
     return dataList

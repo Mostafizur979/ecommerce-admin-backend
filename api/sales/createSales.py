@@ -3,6 +3,7 @@ from datetime import datetime
 
 def createSales(request, cursor, mydb):
     body = json.loads(request.body.decode('utf-8'))
+    print("Data: ",body)
     sku_list = body.get('pid')                
     qty_dict = body.get('qty')                
     size = body.get('size')
@@ -19,6 +20,8 @@ def createSales(request, cursor, mydb):
     individualTax_list = body.get('individualTax') 
     indivualDiscount_list = body.get('indivualDiscount')
     created_on = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    
     
     createCustomer(cursor,mydb,cName,cMobile,cUpazila,cDistrict,created_on)
 
